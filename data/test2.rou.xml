@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2021-12-20 13:29:04 by Eclipse SUMO netedit Version 1.9.2
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <output>
+        <output-file value="/Users/corinnajiang/flow/flow/Myroute/netparam/test2.net.xml"/>
+        <junctions.join-output value=""/>
+    </output>
+
+    <processing>
+        <offset.disable-normalization value="true"/>
+    </processing>
+
+    <junctions>
+        <no-turnar  ounds value="true"/>
+    </junctions>
+
+    <netedit>
+        <route-files value="/Users/corinnajiang/flow/flow/Myroute/test2.rou.xml"/>
+    </netedit>
+
+    <report>
+        <aggregate-warnings value="5"/>
+    </report>
+
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="RL" color="red"/>
+    <vType id="vType_0"/>
+    <trip id="vehicle_1" type="vType_0" depart="0.00" from="gneE21" to="gneE23" via="-gneE22"/>
+    <trip id="vehicle_10" type="RL" depart="0.00" from="-gneE24" to="gneE23"/>
+    <trip id="vehicle_2" type="vType_0" depart="0.00" from="-gneE17" to="-gneE22" via="-gneE18 gneE19 gneE16 -gneE21"/>
+    <trip id="vehicle_3" type="vType_0" depart="0.00" from="-gneE16" to="gneE23" via="-gneE19"/>
+    <trip id="vehicle_4" type="vType_0" depart="0.00" from="gneE17" to="gneE23" via="gneE18"/>
+    <trip id="vehicle_5" type="vType_0" depart="0.00" from="-gneE19" to="gneE23"/>
+    <trip id="vehicle_6" type="vType_0" depart="0.00" from="gneE20" to="gneE23" via="gneE22"/>
+    <trip id="vehicle_7" type="vType_0" depart="0.00" from="gneE16" to="gneE23" via="gneE20 -gneE22"/>
+    <trip id="vehicle_8" type="vType_0" depart="0.00" from="gneE21" to="gneE23" via="gneE22"/>
+    <trip id="vehicle_9" type="vType_0" depart="0.00" from="gneE21" to="gneE23" via="gneE22"/>
+</routes>
