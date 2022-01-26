@@ -60,6 +60,9 @@ class VehicleEnv:
             return []
         lanes = info[tc.VAR_LANE_INDEX]
         valid_next_edgelist = self.check_next_edge(cur_edges, lanes)
+        if len(valid_next_edgelist)==0:
+            return False
+        print('valid_next_edgelist',valid_next_edgelist)
         # print(next_edge[0][0])
         # print(genertate_connect()['next'][next_edge[0][0]][lanes])
         for num in range(len(valid_next_edgelist)):
@@ -214,6 +217,8 @@ class VehicleEnv:
         if len(routelist) == 0:
             print('routelist is none')
             return None
+        elif routelist == False :
+            return 'NoneConnection'
         elif self.start_edge in routelist:
             print('des_edge', self.start_edge)
             return self.start_edge
