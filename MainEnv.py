@@ -116,6 +116,7 @@ class SumoRouteEnv(gym.Env, VehicleEnv, NetworkEnv):
         self.reward = None
         self.done = None
         self.sumo = None
+        self.actionList_keeper = None
         self.label = str(SumoRouteEnv.CONNECTION_LABEL)
         # self.routlist
         print('------initia traci -------')
@@ -237,6 +238,7 @@ class SumoRouteEnv(gym.Env, VehicleEnv, NetworkEnv):
         self.curr_routelist_keeper = None
         self.next_obers_keeper = None
         self.reward_keeper =None
+        self.actionList_keeper = None
 
 
         # collect information of the state of the network based on the
@@ -283,8 +285,10 @@ class SumoRouteEnv(gym.Env, VehicleEnv, NetworkEnv):
             #     print('invaild action')
             #     return
         # states = self.get_state()
+            cur_speed = VehicleEnv.get_veh_speed(self,self.veh_id)
+            print('cur_speed',cur_speed)
 
-            if self.update:
+            if self.update and cur_speed !=0:
                 next_observation = self.computer_observation(edge_choice)
                 self.next_obers_keeper = next_observation
                 # self.states = np.asarray(states).T
@@ -413,7 +417,7 @@ class SumoRouteEnv(gym.Env, VehicleEnv, NetworkEnv):
         # VehicleEnv.unsubscribe_vehicle(self, self.veh_id
         self.actionList = VehicleEnv.generate_routeList(self, veh_id=self.veh_id)
         # self.action_space.n = len(self.actionList)-1
-        if self.actionList != 'NoneConnection':
+        if self.actionList is not False and self.actionList !='Intersection':
             if choose_route_index > len(self.actionList)-1:
                 # self.update = True
                 choose_route_index = len(self.actionList)-1
@@ -421,9 +425,19 @@ class SumoRouteEnv(gym.Env, VehicleEnv, NetworkEnv):
             print('self action list', self.actionList)
 
         edge_choice = VehicleEnv.choose_rl_routes(self, self.veh_id, choose_route_index)
-        if edge_choice is not None:
+        # if edge_choice in self.actionList and self.edge_choice_keeper in self.actionList:
+        #     edge_check = False
+        # else:
+        #     edge_check = True
+        # print('1 st edge_choice', edge_choice)
+        # if len(self.actionList) !=0 or self.actionList is not None or self.actionList is not False or self.actionList !='Intersection' or self.edge_choice_keeper is not None or edge_choice is not None:
+        #     edge_check = (edge_choice not in self.actionList) and (self.edge_choice_keeper in self.actionList)
+        # else: edge_check = False
+
+        if edge_choice is not None and edge_choice !='NoneConnection':
             self.update = True
             self.edge_choice_keeper = edge_choice
+            self.actionList_keeper = self.actionList
             print('2rd edge choice',edge_choice)
 
             cur_routelist = VehicleEnv.assign_rl_route(self, self.veh_id, edge_choice)

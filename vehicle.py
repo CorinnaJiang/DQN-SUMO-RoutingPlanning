@@ -21,6 +21,7 @@ class VehicleEnv:
         self.dest_edge = Des_edge
         self.curr_routelist = routlist
         self.netdir = netdir
+        self.choice_keeper = None
 
         # self.set_vehicle_route(self.veh_id)
 
@@ -57,10 +58,11 @@ class VehicleEnv:
         cur_edges = info[tc.VAR_ROAD_ID]
         # print('cur_edges',info)
         if cur_edges[0] == ":":
-            return []
+            return 'Intersection'
         lanes = info[tc.VAR_LANE_INDEX]
         valid_next_edgelist = self.check_next_edge(cur_edges, lanes)
         if len(valid_next_edgelist)==0:
+            print('valid_next_edgelist is false', valid_next_edgelist)
             return False
         print('valid_next_edgelist',valid_next_edgelist)
         # print(next_edge[0][0])
@@ -214,11 +216,12 @@ class VehicleEnv:
     def choose_rl_routes(self, veh_id, index):
         routelist = self.generate_routeList(veh_id)
         print('---routelist ',routelist)
-        if len(routelist) == 0:
+        if routelist == False :
+            print('routelist is no conn')
+            return 'NoneConnection'
+        elif routelist == 'Intersection':
             print('routelist is none')
             return None
-        elif routelist == False :
-            return 'NoneConnection'
         elif self.start_edge in routelist:
             print('des_edge', self.start_edge)
             return self.start_edge
@@ -230,6 +233,7 @@ class VehicleEnv:
             return edge_id_choice
 
     def assign_rl_route(self, veh_id, edge_choice):
+        routelist = self.generate_routeList(veh_id)
         if self.start_edge not in self.curr_routelist :
             # assign the start poiont
             self.curr_routelist.append(self.start_edge)
@@ -239,9 +243,11 @@ class VehicleEnv:
             # edge_choice = self.choose_rl_routes(veh_id,index)
             if edge_choice is None:
                 return self.curr_routelist
-            elif edge_choice not in self.curr_routelist:
+            elif edge_choice not in self.curr_routelist and self.choice_keeper not in routelist:
                 self.curr_routelist.append(edge_choice)
-            else: return self.curr_routelist
+                self.choice_keeper = edge_choice
+            else:
+                return self.curr_routelist
             # else:
             #     return False
         # traci.vehicle.setRoute(veh_id, curr_routelist)
@@ -271,7 +277,7 @@ class VehicleEnv:
             if edge_choice is None:
                 return self.curr_routelist
             if edge_choice not in self.curr_routelist :
-                self.curr_routelist .append(edge_choice)
+                self.curr_routelist.append(edge_choice)
         # traci.vehicle.setRoute(veh_id, curr_routelist)
         print(self.curr_routelist )
         return self.curr_routelist
@@ -279,7 +285,8 @@ class VehicleEnv:
     def set_vehicle_route(self, veh_id, routelist):
         # routlist = self.assign_route(veh_id)
         # if self.arrive_excution_zone(veh_id):
-        traci.vehicle.setRoute(veh_id, routelist)
+        print('set the route now!!')
+        return traci.vehicle.setRoute(veh_id, routelist)
 
     # def set_vehicle_route(self, veh_id):
     #     routelist = self.assign_route(veh_id)
@@ -319,7 +326,7 @@ class VehicleEnv:
         speed = self.get_veh_speed(self.veh_id)
         Actiontime = self.get_action_length(self.veh_id)
         Watitime = self.get_wait_time(self.veh_id)
-        decision_dist = np.minimum(edge_len, speed * Actiontime * 1.5)
+        decision_dist = np.minimum(edge_len, speed * Actiontime * 1.3)
         print('waitme ', Watitime)
         print('decision_dist', decision_dist)
         return bool(dist <= decision_dist or dist==0 or decision_dist==0)
