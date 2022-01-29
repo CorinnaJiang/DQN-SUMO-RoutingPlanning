@@ -78,7 +78,7 @@ class Rltrain:
             'adam_epsilon': .00015,
             'hiddens': [512],
             'learning_starts': 20000,
-            # 'buffer_size': 1000000,
+            'buffer_size': 1000000,
             'rollout_fragment_length': 4,
             'train_batch_size': 32,
             'exploration_config':{
@@ -127,7 +127,8 @@ class Rltrain:
                 # 'PG',
                 self.my_train,
                 config=config,
-                stop=stop,
+                # stop=stop,
+                # resume=True
                 # verbose=2,
                 # checkpoint_freq=1,
                 # resources_per_trial=resources,
