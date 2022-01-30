@@ -283,6 +283,7 @@ class SumoRouteEnv(gym.Env, VehicleEnv, NetworkEnv):
             #     print('invaild action')
             #     return
         # states = self.get_state()
+
             if self.update:
                 next_observation = self.computer_observation(edge_choice)
                 self.next_obers_keeper = next_observation
@@ -299,7 +300,11 @@ class SumoRouteEnv(gym.Env, VehicleEnv, NetworkEnv):
             else:
                 next_observation = self.next_obers_keeper
                 reward = self.reward_keeper
-            done = (edge_choice == self.dest_edge) or self.sim_step > self.sim_max_time
+                if edge_choice =='NoneConnection':
+                    reward = -10000000
+            wait_time = VehicleEnv.get_wait_time(self,self.veh_id)
+            done = (edge_choice == self.dest_edge) or self.sim_step > self.sim_max_time or wait_time >=100 or (edge_choice == 'NoneConnection')#or (edge_choice==False)
+
             infos = {}
             print('done or not ,',done)
             # else:
@@ -405,13 +410,13 @@ class SumoRouteEnv(gym.Env, VehicleEnv, NetworkEnv):
         choose_route_index = rl_actions
         print('time to take action:',choose_route_index)
 
-        # VehicleEnv.unsubscribe_vehicle(self, self.veh_id)
+        # VehicleEnv.unsubscribe_vehicle(self, self.veh_id
         self.actionList = VehicleEnv.generate_routeList(self, veh_id=self.veh_id)
         # self.action_space.n = len(self.actionList)-1
-
-        if choose_route_index > len(self.actionList)-1:
-            # self.update = True
-            choose_route_index = len(self.actionList)-1
+        if self.actionList != 'NoneConnection':
+            if choose_route_index > len(self.actionList)-1:
+                # self.update = True
+                choose_route_index = len(self.actionList)-1
         # check the validaition of the action
             print('self action list', self.actionList)
 
@@ -440,6 +445,9 @@ class SumoRouteEnv(gym.Env, VehicleEnv, NetworkEnv):
     # if edge_choice == self.Arrived:
     #     print('arrive the destionat')
     #     VehicleEnv.unsubscribe_vehicle(self, self.veh_id)
+        elif edge_choice == 'NoneConnection':
+            self.update = False
+            return 'NoneConnection'
         else:
             self.update = False
             edge_choice =self.edge_choice_keeper
@@ -487,12 +495,13 @@ class SumoRouteEnv(gym.Env, VehicleEnv, NetworkEnv):
         future_traveling_time = obser[0]
         dis_to_destination = obser[1]
         if edge_choice ==self.dest_edge:
-            arrive = 1
+            arrive = 100000000000
         else: arrive = 0
         if edge_choice == False:
             return -100000
         weight = 0.1
-        instant_reward = np.negative(future_traveling_time + weight*np.negative(dis_to_destination) )+ arrive
+        wait_time = VehicleEnv.get_wait_time(self,self.veh_id)
+        instant_reward = np.negative(future_traveling_time + weight*np.negative(dis_to_destination) )+ arrive - wait_time *100
         print('instant reward', instant_reward)
         return instant_reward
 
